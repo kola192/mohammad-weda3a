@@ -1,0 +1,53 @@
+version: '3.1'
+
+services:
+
+  portfolio:
+    image: wordpress
+    restart: always
+    container_name: weda3a
+    ports:
+      - 8081:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: weda3a-user
+      WORDPRESS_DB_PASSWORD: weda3a-user-password
+      WORDPRESS_DB_NAME: weda3a
+    volumes:
+      - ./:/var/www/html
+    networks: 
+      - weda3a-network
+    depends_on: 
+      - db
+
+  db:
+    image: mysql:5.7
+    restart: always
+    container_name: portfolio-db
+    environment:
+      MYSQL_DATABASE: weda3a
+      MYSQL_USER: weda3a-user
+      MYSQL_PASSWORD: weda3a-user-password
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - ./data:/var/lib/mysql
+    networks: 
+      - weda3a-network
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin:latest
+    container_name: weda3a-phpmyadmin
+    restart: always
+    ports:
+      - 8082:80
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: weda3a-portfolio-db
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - weda3a-network
+
+networks: 
+  weda3a-network:
